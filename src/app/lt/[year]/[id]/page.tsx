@@ -5,6 +5,11 @@ import { useRouter, usePathname } from "next/navigation";
 import { Clock, Calendar, ArrowLeft } from "lucide-react";
 import { use } from "react";
 import { getLTData } from "@/app/actions/lt";
+import {
+  formatDateToYYYYMMDD,
+  formatTimeToHHMM,
+  formatDateToDuration,
+} from "@/libs/dateUtil";
 
 export default function TalkDetail({
   params,
@@ -15,6 +20,7 @@ export default function TalkDetail({
   const pathname = usePathname();
   const { id } = use(params);
   const [talk, setTalk] = useState(null);
+  const [eventDate, setEventDate] = useState<string>("");
   const parentPath = pathname.split("/").slice(0, -1).join("/");
 
   useEffect(() => {
@@ -25,6 +31,7 @@ export default function TalkDetail({
       } else {
         router.push("/404");
       }
+      console.log(talkData);
     }
     fetchData();
   }, [id, router]);
@@ -49,24 +56,29 @@ export default function TalkDetail({
         <article>
           <header className="mb-8">
             <h1 className="text-4xl font-bold text-purple-700 mb-4">
-              {talk.title}
+              {talk.exhibit.name}
             </h1>
             <div className="flex items-center space-x-4 text-blue-700">
               <div className="flex items-center">
                 <Clock className="w-5 h-5 mr-2" aria-hidden="true" />
-                <span>{talk.time}</span>
+                <span>
+                  {formatDateToDuration(talk.startTime, talk.duration)}
+                </span>
               </div>
               <div className="flex items-center">
                 <Calendar className="w-5 h-5 mr-2" aria-hidden="true" />
-                <span>11/9</span>
+                <span>{formatDateToYYYYMMDD(talk.startTime)}</span>
               </div>
             </div>
           </header>
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-2">
-              Speaker: {talk.speaker}
+              Speaker:{" "}
+              {talk.exhibit.members
+                ?.map((member) => member.member.name)
+                .join(", ")}
             </h2>
-            <p className="text-gray-600">{talk.description}</p>
+            <p className="text-gray-600">{talk.exhibit.description}</p>
           </div>
           <div className="aspect-w-16 aspect-h-9 mb-8">
             <iframe
