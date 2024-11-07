@@ -1,4 +1,6 @@
-const lt_data_table = {
-  year: 2024,
-  id: "lt_01HQ5G2J3N4K5M6P7R8T9V0W1",
-};
+export const lt_data_table = [
+  {
+    year: "2024",
+    id: "bd2ee060-3fca-465b-abc1-aeb9f72d1b11",
+  },
+];
