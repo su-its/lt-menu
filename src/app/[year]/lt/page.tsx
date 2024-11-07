@@ -78,7 +78,7 @@ export default function Home({ params }): {
             {talks.map((talk, index) => {
               return (
                 <Link
-                  href={`/lt/${year}/${talk.exhibitId}`}
+                  href={`/${year}/lt/${talk.exhibitId}`}
                   key={talk.exhibitId}
                 >
                   <motion.div

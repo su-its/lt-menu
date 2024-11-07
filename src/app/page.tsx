@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 export default function Component() {
   const router = useRouter();
   useEffect(() => {
-    router.push("/lt/2024");
+    router.push("/2024/lt");
   }, [router]);
   return <div />;
 }
