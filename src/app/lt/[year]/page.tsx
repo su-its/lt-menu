@@ -1,20 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Clock, Calendar } from "lucide-react";
+import { getLTs } from "@/app/actions/lt";
+import { lt_data_table } from "@/app/data/lt";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { talks } from "@/data";
+import { use } from "react";
+import Link from "next/link";
 
-export default function Component() {
-  const [mounted, setMounted] = useState(false);
+export default function Home({ params }): {
+  params: Promise<{ year: string }>;
+} {
   const router = useRouter();
+  const { year } = use(params);
+  const [talks, setTalks] = useState([]);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
+    const fetchTalks = async () => {
+      const talks = await getLTs();
+      if (talks) {
+        setTalks(talks);
+      } else {
+        router.push("/404");
+      }
+    };
+    fetchTalks();
+  }, [router]);
 
   return (
     <div className="bg-white text-black min-h-screen p-8 font-sans overflow-hidden">
@@ -42,25 +54,26 @@ export default function Component() {
         <main>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {talks.map((talk, index) => (
-              <motion.div
-                key={talk.id}
-                className="bg-white rounded-lg p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 border-2 border-gray-300 cursor-pointer"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                onClick={() => router.push(`/talk/${talk.id}`)}
-              >
-                <div className="text-sm text-blue-700 mb-2 font-semibold">
-                  {talk.time}
-                </div>
-                <h2 className="text-2xl font-bold mb-2 text-purple-700">
-                  {talk.title}
-                </h2>
-                <div className="text-md font-medium text-gray-800 mb-2">
-                  {talk.speaker}
-                </div>
-                <p className="text-gray-600">{talk.description}</p>
-              </motion.div>
+              <Link href={`/lt/${year}/${talk.id}`} key={talk.id}>
+                <motion.div
+                  key={talk.id}
+                  className="h-full bg-white rounded-lg p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 border-2 border-gray-300 cursor-pointer"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                >
+                  <div className="text-sm text-blue-700 mb-2 font-semibold">
+                    {talk.time}
+                  </div>
+                  <h2 className="text-2xl font-bold mb-2 text-purple-700">
+                    {talk.title}
+                  </h2>
+                  <div className="text-md font-medium text-gray-800 mb-2">
+                    {talk.speaker}
+                  </div>
+                  <p className="text-gray-600">{talk.description}</p>
+                </motion.div>
+              </Link>
             ))}
           </div>
         </main>
