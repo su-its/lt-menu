@@ -1,10 +1,11 @@
 "use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Component() {
-  return (
-    <div>
-      <h1>Page</h1>
-    </div>
-  );
+  const router = useRouter();
+  useEffect(() => {
+    router.push("/lt/2024");
+  }, [router]);
+  return <div />;
 }
-
