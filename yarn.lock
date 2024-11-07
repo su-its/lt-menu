@@ -283,10 +283,10 @@
   dependencies:
     "@prisma/debug" "5.22.0"
 
-"@shizuoka-its/core@^0.3.0-rc.0":
-  version "0.3.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@shizuoka-its/core/-/core-0.3.0-rc.0.tgz#17b7783f1381e65979f1f3e5b9264ccb69b02e9a"
-  integrity sha512-cmwi8N67B9f3tdW+aVy59QlE6Ovb1AeA4Dvn203ZUiIcSyfX7169vyn4aUGZ4zW2nUTMybFbkZ3y0NqPtNgr+Q==
+"@shizuoka-its/core@^0.3.1-rc.2":
+  version "0.3.1-rc.2"
+  resolved "https://registry.yarnpkg.com/@shizuoka-its/core/-/core-0.3.1-rc.2.tgz#fd45d283db43bb27b4cc8c5d3896592cd4981edb"
+  integrity sha512-EQHn+dssxeAQpS32nRQxx6MHJwI51bPPfJDmqLhQwCf78OqaaGel6mXrIhQiEINazim6vwRu1IoMH8UVrvc0Jw==
   dependencies:
     "@prisma/client" "^5.22.0"
 
