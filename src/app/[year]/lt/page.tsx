@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Clock, Calendar } from "lucide-react";
-import { getLTs, getEvent } from "@/app/actions/lt";
-import type { Event, LightningTalkWithAll } from "@shizuoka-its/core";
+import { getLTs, getEvent, type LightningTalkWithAll } from "@/app/actions/lt";
+import type { Event } from "@shizuoka-its/core";
 import { lt_data_table } from "@/constants";
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";

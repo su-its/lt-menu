@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import type { LightningTalkWithAll } from "@shizuoka-its/core";
 import { Clock, Calendar, ArrowLeft } from "lucide-react";
 import { use } from "react";
-import { getLTData } from "@/app/actions/lt";
+import { getLTData, type LightningTalkWithAll } from "@/app/actions/lt";
 import { formatDateToYYYYMMDD, formatDateToDuration } from "@/libs/dateUtil";
 import { Spinner } from "@/Components/Spinner";
 
