@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import type { LightningTalk,Exhibit } from "@shizuoka-its/core";
+import type { LightningTalk, Exhibit } from "@shizuoka-its/core";
 import { Clock, Calendar, ArrowLeft } from "lucide-react";
 import { use } from "react";
 import { getLTData } from "@/app/actions/lt";
-import {
-  formatDateToYYYYMMDD,
-  formatDateToDuration,
-} from "@/libs/dateUtil";
+import { formatDateToYYYYMMDD, formatDateToDuration } from "@/libs/dateUtil";
+import { Spinner } from "@/components/Spinner";
 
 export default function TalkDetail({
   params,
@@ -19,7 +17,9 @@ export default function TalkDetail({
   const router = useRouter();
   const pathname = usePathname();
   const { id } = use(params);
-  const [talk, setTalk] = useState<(LightningTalk & { exhibit: Exhibit } )| null>(null);
+  const [talk, setTalk] = useState<
+    (LightningTalk & { exhibit: Exhibit }) | null
+  >(null);
   const parentPath = pathname.split("/").slice(0, -1).join("/");
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function TalkDetail({
   }, [id, router]);
 
   if (!talk) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
   return (
@@ -76,20 +76,24 @@ export default function TalkDetail({
               {/* TODO:  @shizuoka-its/coreの型定義アップデートに合わせた対応を行う */}
               {/* @ts-ignore */}
               {talk.exhibit.members
-              // @ts-ignore
-              // TODO:  @shizuoka-its/coreの型定義アップデートに合わせた対応を行う
+                // @ts-ignore
+                // TODO:  @shizuoka-its/coreの型定義アップデートに合わせた対応を行う
                 ?.map((member) => member.member.name)
                 .join(", ")}
             </h2>
             <p className="text-gray-600">{talk.exhibit.description}</p>
           </div>
           <div className="aspect-w-16 aspect-h-9 mb-8">
-            <iframe
-              src={`https://speakerdeck.com/player/${talk.slideUrl}`}
-              allowFullScreen
-              title={`${talk.exhibit.name} presentation`}
-              className="w-full h-full rounded-lg min-h-[500px]"
-            />
+            {talk.slideUrl == null ? (
+              <p>スライド公開予定</p>
+            ) : (
+              <iframe
+                src={`https://speakerdeck.com/player/${talk.slideUrl}`}
+                allowFullScreen
+                title={`${talk.exhibit.name} presentation`}
+                className="w-full h-full rounded-lg min-h-[500px]"
+              />
+            )}
           </div>
         </article>
       </div>
