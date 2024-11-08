@@ -9,6 +9,7 @@ import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatDateToYYYYMMDD, formatDateToDuration } from "@/libs/dateUtil";
+import { Spinner } from "@/Components/Spinner";
 
 export default function Home({
   params,
@@ -42,7 +43,7 @@ export default function Home({
   }, [year, router]);
 
   if (!event) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
   return (
@@ -54,10 +55,10 @@ export default function Home({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
+          <h1 className="text-3xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
             {event?.name}
           </h1>
-          <div className="flex justify-center items-center space-x-6 text-blue-700">
+          <div className="flex justify-center items-center space-x-6 text-blue-700 lg:flex-row flex-col">
             <div className="flex items-center">
               <Calendar className="w-5 h-5 mr-2" />
               <span className="font-semibold">

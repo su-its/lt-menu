@@ -7,6 +7,7 @@ import { Clock, Calendar, ArrowLeft } from "lucide-react";
 import { use } from "react";
 import { getLTData } from "@/app/actions/lt";
 import { formatDateToYYYYMMDD, formatDateToDuration } from "@/libs/dateUtil";
+import { Spinner } from "@/Components/Spinner";
 
 export default function TalkDetail({
   params,
@@ -33,7 +34,7 @@ export default function TalkDetail({
   }, [id, router]);
 
   if (!talk) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
   return (
@@ -77,12 +78,16 @@ export default function TalkDetail({
             <p className="text-gray-600">{talk.exhibit.description}</p>
           </div>
           <div className="aspect-w-16 aspect-h-9 mb-8">
-            <iframe
-              src={`https://speakerdeck.com/player/${talk.slideUrl}`}
-              allowFullScreen
-              title={`${talk.exhibit.name} presentation`}
-              className="w-full h-full rounded-lg min-h-[500px]"
-            />
+            {talk.slideUrl == null ? (
+              <p>スライド公開予定</p>
+            ) : (
+              <iframe
+                src={`https://speakerdeck.com/player/${talk.slideUrl}`}
+                allowFullScreen
+                title={`${talk.exhibit.name} presentation`}
+                className="w-full h-full rounded-lg min-h-[500px]"
+              />
+            )}
           </div>
         </article>
       </div>
