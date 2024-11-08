@@ -1,19 +1,43 @@
 "use server";
 
-import type {
-  LightningTalk,
-  Event,
-  Exhibit,
-  Member,
-  LightningTalkWithAll,
+import {
+  type Event,
+  type Exhibit,
+  type LightningTalk,
+  type Member,
+  type MemberExhibit,
+  PrismaClient,
 } from "@shizuoka-its/core";
-import { createClient } from "@shizuoka-its/core";
 
-const client = createClient();
+const client = new PrismaClient();
+
+const exhibitInclude = {
+  exhibit: {
+    include: {
+      event: true,
+      members: {
+        include: {
+          member: true,
+        },
+      },
+    },
+  },
+};
+
+export type LightningTalkWithAll = LightningTalk & {
+  exhibit: Exhibit & {
+    event: Event;
+    members: (MemberExhibit & {
+      member: Member;
+    })[];
+  };
+};
 
 export async function getEvent(eventId: string): Promise<Event> {
   try {
-    const event = await client.services.event.findById(eventId); // イベントIDを指定
+    const event = await client.event.findUnique({
+      where: { id: eventId },
+    });
     if (!event) throw new Error("Event not found");
     return event;
   } catch (error) {
@@ -24,7 +48,14 @@ export async function getEvent(eventId: string): Promise<Event> {
 
 export async function getLTs(event: Event): Promise<LightningTalkWithAll[]> {
   try {
-    const lts = await client.services.lightningTalk.findByEventId(event.id);
+    const lts = await client.lightningTalk.findMany({
+      where: {
+        exhibit: {
+          eventId: event.id,
+        },
+      },
+      include: exhibitInclude,
+    });
     return lts;
   } catch (error) {
     console.error("Failed to fetch talks:", error);
@@ -32,11 +63,13 @@ export async function getLTs(event: Event): Promise<LightningTalkWithAll[]> {
   }
 }
 
-export async function getLTData(
-  id: string,
-): Promise<LightningTalkWithAll | null> {
+export async function getLTData(id: string): Promise<LightningTalkWithAll> {
   try {
-    const lt = await client.services.lightningTalk.findById(id);
+    const lt = await client.lightningTalk.findUnique({
+      where: { exhibitId: id },
+      include: exhibitInclude,
+    });
+    if (!lt) throw new Error("Talk not found");
     return lt;
   } catch (error) {
     console.error("Failed to fetch talks:", error);
