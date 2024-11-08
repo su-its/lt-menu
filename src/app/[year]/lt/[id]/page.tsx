@@ -81,7 +81,7 @@ export default function TalkDetail({
               <p>スライド公開予定</p>
             ) : (
               <iframe
-                src={`${talk.slideUrl}`}
+                src={talk.slideUrl}
                 allowFullScreen
                 title={`${talk.exhibit.name} presentation`}
                 className="w-full h-full rounded-lg min-h-[500px]"
