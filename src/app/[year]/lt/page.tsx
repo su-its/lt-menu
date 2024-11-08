@@ -9,7 +9,7 @@ import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatDateToYYYYMMDD, formatDateToDuration } from "@/libs/dateUtil";
-import { Spinner } from "@/components/Spinner";
+import { Spinner } from "@/Components/Spinner";
 
 export default function Home({
   params,

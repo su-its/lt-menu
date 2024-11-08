@@ -7,7 +7,7 @@ import { Clock, Calendar, ArrowLeft } from "lucide-react";
 import { use } from "react";
 import { getLTData } from "@/app/actions/lt";
 import { formatDateToYYYYMMDD, formatDateToDuration } from "@/libs/dateUtil";
-import { Spinner } from "@/components/Spinner";
+import { Spinner } from "@/Components/Spinner";
 
 export default function TalkDetail({
   params,
