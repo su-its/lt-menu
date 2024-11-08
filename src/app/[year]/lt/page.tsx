@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Clock, Calendar } from "lucide-react";
 import { getLTs, getEvent } from "@/app/actions/lt";
-import type { LightningTalk, Exhibit, Event } from "@shizuoka-its/core";
+import type { Event, LightningTalkWithAll } from "@shizuoka-its/core";
 import { lt_data_table } from "@/constants";
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -18,9 +18,7 @@ export default function Home({
 }) {
   const router = useRouter();
   const { year } = use(params);
-  const [talks, setTalks] = useState<(LightningTalk & { exhibit: Exhibit })[]>(
-    [],
-  );
+  const [talks, setTalks] = useState<LightningTalkWithAll[]>([]);
   const [event, setEvent] = useState<Event | null>(null);
 
   useEffect(() => {
@@ -95,11 +93,7 @@ export default function Home({
                       {talk.exhibit.name}
                     </h2>
                     <div className="text-md font-medium text-gray-800 mb-2">
-                      {/* TODO:  @shizuoka-its/coreの型定義アップデートに合わせた対応を行う */}
-                      {/* @ts-ignore */}
                       {talk.exhibit.members
-                        // @ts-ignore
-                        // TODO:  @shizuoka-its/coreの型定義アップデートに合わせた対応を行う
                         .map((member) => member.member.name)
                         .join(", ")}
                     </div>

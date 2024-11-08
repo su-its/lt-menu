@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import type { LightningTalk, Exhibit } from "@shizuoka-its/core";
+import type { LightningTalkWithAll } from "@shizuoka-its/core";
 import { Clock, Calendar, ArrowLeft } from "lucide-react";
 import { use } from "react";
 import { getLTData } from "@/app/actions/lt";
@@ -17,9 +17,7 @@ export default function TalkDetail({
   const router = useRouter();
   const pathname = usePathname();
   const { id } = use(params);
-  const [talk, setTalk] = useState<
-    (LightningTalk & { exhibit: Exhibit }) | null
-  >(null);
+  const [talk, setTalk] = useState<LightningTalkWithAll | null>(null);
   const parentPath = pathname.split("/").slice(0, -1).join("/");
 
   useEffect(() => {
@@ -73,11 +71,7 @@ export default function TalkDetail({
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-2">
               Speaker:{" "}
-              {/* TODO:  @shizuoka-its/coreの型定義アップデートに合わせた対応を行う */}
-              {/* @ts-ignore */}
               {talk.exhibit.members
-                // @ts-ignore
-                // TODO:  @shizuoka-its/coreの型定義アップデートに合わせた対応を行う
                 ?.map((member) => member.member.name)
                 .join(", ")}
             </h2>
