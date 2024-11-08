@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import type { LightningTalk,Exhibit } from "@shizuoka-its/core";
 import { Clock, Calendar, ArrowLeft } from "lucide-react";
 import { use } from "react";
 import { getLTData } from "@/app/actions/lt";
 import {
   formatDateToYYYYMMDD,
-  formatTimeToHHMM,
   formatDateToDuration,
 } from "@/libs/dateUtil";
 
@@ -19,8 +19,7 @@ export default function TalkDetail({
   const router = useRouter();
   const pathname = usePathname();
   const { id } = use(params);
-  const [talk, setTalk] = useState(null);
-  const [eventDate, setEventDate] = useState<string>("");
+  const [talk, setTalk] = useState<(LightningTalk & { exhibit: Exhibit } )| null>(null);
   const parentPath = pathname.split("/").slice(0, -1).join("/");
 
   useEffect(() => {
@@ -74,7 +73,11 @@ export default function TalkDetail({
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-2">
               Speaker:{" "}
+              {/* TODO:  @shizuoka-its/coreの型定義アップデートに合わせた対応を行う */}
+              {/* @ts-ignore */}
               {talk.exhibit.members
+              // @ts-ignore
+              // TODO:  @shizuoka-its/coreの型定義アップデートに合わせた対応を行う
                 ?.map((member) => member.member.name)
                 .join(", ")}
             </h2>
@@ -82,9 +85,9 @@ export default function TalkDetail({
           </div>
           <div className="aspect-w-16 aspect-h-9 mb-8">
             <iframe
-              src={`https://speakerdeck.com/player/${talk.speakerDeckId}`}
+              src={`https://speakerdeck.com/player/${talk.slideUrl}`}
               allowFullScreen
-              title={`${talk.title} presentation`}
+              title={`${talk.exhibit.name} presentation`}
               className="w-full h-full rounded-lg min-h-[500px]"
             />
           </div>

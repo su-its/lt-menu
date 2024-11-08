@@ -3,30 +3,29 @@
 import { motion } from "framer-motion";
 import { Clock, Calendar } from "lucide-react";
 import { getLTs, getEvent } from "@/app/actions/lt";
-import type { LightningTalk, Event } from "@shizuoka-its/core";
+import type { LightningTalk,Exhibit, Event } from "@shizuoka-its/core";
 import { lt_data_table } from "@/constants";
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   formatDateToYYYYMMDD,
-  formatTimeToHHMM,
   formatDateToDuration,
 } from "@/libs/dateUtil";
 
-export default function Home({ params }): {
+export default function Home({ params }: {
   params: Promise<{ year: string }>;
-} {
+}) {
   const router = useRouter();
   const { year } = use(params);
-  const [talks, setTalks] = useState<LightningTalk & { exhibit: Exhibit }[]>(
+  const [talks, setTalks] = useState<(LightningTalk & { exhibit: Exhibit })[]>(
     [],
   );
   const [event, setEvent] = useState<Event | null>(null);
 
   useEffect(() => {
     const fetchTalks = async () => {
-      const eventID = lt_data_table.find((lt) => lt.year === year)?.id;
+      const eventID = lt_data_table.find((lt) => lt.year === year)?.id as string;
       const event = await getEvent(eventID);
       const talks = await getLTs(event);
       const sortedTalks = talks.sort((a, b) => {
@@ -95,7 +94,11 @@ export default function Home({ params }): {
                       {talk.exhibit.name}
                     </h2>
                     <div className="text-md font-medium text-gray-800 mb-2">
+                    {/* TODO:  @shizuoka-its/coreの型定義アップデートに合わせた対応を行う */}
+                    {/* @ts-ignore */}
                       {talk.exhibit.members
+                      // @ts-ignore
+                      // TODO:  @shizuoka-its/coreの型定義アップデートに合わせた対応を行う
                         .map((member) => member.member.name)
                         .join(", ")}
                     </div>
