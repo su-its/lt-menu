@@ -1,14 +1,8 @@
 "use server";
 
-import {
-  type Event,
-  type Exhibit,
-  type Member,
-  type MemberExhibit,
-  PrismaClient,
-} from "@shizuoka-its/core";
+import type { Event, Exhibit, Member, MemberExhibit } from "@shizuoka-its/core";
 
-const client = new PrismaClient();
+import client from "@/libs/prisma";
 
 const exhibitInclude = {
   event: true,
@@ -25,6 +19,7 @@ export type ExhibitWithAll = Exhibit & {
     member: Member;
   })[];
 };
+
 export async function getExhibits(event: Event): Promise<ExhibitWithAll[]> {
   try {
     const exhibits = await client.exhibit.findMany({
