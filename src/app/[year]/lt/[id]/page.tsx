@@ -1,5 +1,6 @@
 import { Clock, Calendar, ArrowLeft } from "lucide-react";
-import { getLTData, type LightningTalkWithAll } from "@/app/actions/lt";
+import { getLTData, getLTs, type LightningTalkWithAll } from "@/app/actions/lt";
+import { getEvent } from "@/app/actions/lt";
 import Link from "next/link";
 import { formatDateToYYYYMMDD, formatDateToDuration } from "@/libs/dateUtil";
 import { Spinner } from "@/Components/Spinner";
@@ -10,9 +11,10 @@ export const revalidate = 3600;
 
 export async function generateStaticParams() {
   return lt_data_table.map(async (lt) => {
-    const talkss = await getLTDatas(lt.id);
+    const event = await getEvent(lt.id);
+    const talks = await getLTs(event);
     return talks.map((talk) => ({
-      id: talk.exhibit_id,
+      id: talk.exhibitId,
     }));
   });
 }

@@ -7,7 +7,12 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { getExhibitData, type ExhibitWithAll } from "@/app/actions/exhibit";
+import {
+  getExhibitData,
+  getExhibits,
+  type ExhibitWithAll,
+} from "@/app/actions/exhibit";
+import { getEvent } from "@/app/actions/lt";
 import { Spinner } from "@/Components/Spinner";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -119,7 +124,8 @@ export const revalidate = 3600;
 
 export async function generateStaticParams() {
   return exhibit_data_table.map(async (exhibit) => {
-    const exhibits = await getExhibits(exhibit.id);
+    const event = await getEvent(exhibit.id);
+    const exhibits = await getExhibits(event);
     return exhibits.map((exhibit) => ({
       params: { id: exhibit.id },
     }));
