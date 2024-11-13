@@ -1,53 +1,46 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
 import { Clock, Calendar, ArrowLeft } from "lucide-react";
-import { use } from "react";
 import { getLTData, type LightningTalkWithAll } from "@/app/actions/lt";
+import Link from "next/link";
 import { formatDateToYYYYMMDD, formatDateToDuration } from "@/libs/dateUtil";
 import { Spinner } from "@/Components/Spinner";
+import { notFound } from "next/navigation";
+import { lt_data_table } from "@/constants";
 
-export default function TalkDetail({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { id } = use(params);
-  const [talk, setTalk] = useState<LightningTalkWithAll | null>(null);
-  const parentPath = pathname.split("/").slice(0, -1).join("/");
+export const revalidate = 3600;
 
-  useEffect(() => {
-    async function fetchData() {
-      const talkData = await getLTData(id);
-      if (talkData) {
-        setTalk(talkData);
-      } else {
-        router.push("/404");
-      }
-      console.log(talkData);
-    }
-    fetchData();
-  }, [id, router]);
+export async function generateStaticParams() {
+  return lt_data_table.map(async (lt) => {
+    const talkss = await getLTDatas(lt.id);
+    return talks.map((talk) => ({
+      id: talk.exhibit_id,
+    }));
+  });
+}
 
+type tParams = Promise<{ id: string }>;
+
+export default async function TalkDetail({ params }: { params: tParams }) {
+  const { id } = await params;
+  const talk = await getLTData(id);
   if (!talk) {
-    return <Spinner />;
+    notFound();
   }
+
+  const preUrl = `/${new Date(talk.exhibit.event.date).getFullYear()}/lt`;
 
   return (
     <div className="bg-white text-black min-h-screen p-8 font-sans">
       <div className="max-w-4xl mx-auto">
         <nav className="mb-8">
-          <button
-            type="button"
-            onClick={() => router.push(parentPath)}
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            <span>Back to all talks</span>
-          </button>
+          <Link href={preUrl}>
+            <button
+              type="button"
+              className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              <span>Back to all talks</span>
+            </button>
+          </Link>
         </nav>
         <article>
           <header className="mb-8">

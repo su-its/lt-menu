@@ -19,8 +19,8 @@ export async function generateStaticParams() {
 
 type tParams = Promise<{ year: string }>;
 
-async function ExhibitList(props: { params: tParams }) {
-  const { year } = await props.params;
+async function ExhibitList({ params }: { params: tParams }) {
+  const { year } = await params;
   const eventID = exhibit_data_table.find((exhibit) => exhibit.year === year)
     ?.id as string;
 
@@ -68,14 +68,14 @@ async function ExhibitList(props: { params: tParams }) {
                   )}
                   {exhibit.url && (
                     <div className="mt-2">
-                      <a
+                      <Link
                         href={exhibit.url}
                         className="text-blue-600 hover:text-blue-800 underline"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         関連リンク
-                      </a>
+                      </Link>
                     </div>
                   )}
                 </div>

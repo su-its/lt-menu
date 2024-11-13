@@ -1,12 +1,17 @@
-"use client";
-import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { ArrowLeft, Users, Github, Youtube, Link } from "lucide-react";
-import { use } from "react";
+import {
+  ArrowLeft,
+  Users,
+  Github,
+  Youtube,
+  Link as IconLink,
+} from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getExhibitData, type ExhibitWithAll } from "@/app/actions/exhibit";
 import { Spinner } from "@/Components/Spinner";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { exhibit_data_table } from "@/constants";
 
 interface URLDisplay {
   type: "github" | "youtube" | "google-slides" | "other";
@@ -47,14 +52,14 @@ function URLContent({ urlInfo }: { urlInfo: URLDisplay }) {
             <Github className="w-6 h-6 mr-2" />
             GitHubリポジトリ
           </h2>
-          <a
+          <Link
             href={urlInfo.url}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:text-blue-800 underline flex items-center"
           >
             リポジトリを見る
-          </a>
+          </Link>
         </div>
       );
 
@@ -94,63 +99,58 @@ function URLContent({ urlInfo }: { urlInfo: URLDisplay }) {
       return (
         <div className="mb-8">
           <h2 className="text-2xl font-semibold mb-4 flex items-center">
-            <Link className="w-6 h-6 mr-2" />
+            <IconLink className="w-6 h-6 mr-2" />
             関連リンク
           </h2>
-          <a
+          <Link
             href={urlInfo.url}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:text-blue-800 underline"
           >
             リンクを開く
-          </a>
+          </Link>
         </div>
       );
   }
 }
 
-export default function ExhibitDetail({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { id } = use(params);
-  const [exhibit, setExhibit] = useState<ExhibitWithAll | null>(null);
-  const parentPath = pathname.split("/").slice(0, -1).join("/");
+export const revalidate = 3600;
 
-  useEffect(() => {
-    async function fetchData() {
-      const exhibitData = await getExhibitData(id);
-      if (exhibitData) {
-        setExhibit(exhibitData);
-      } else {
-        router.push("/404");
-      }
-    }
-    fetchData();
-  }, [id, router]);
+export async function generateStaticParams() {
+  return exhibit_data_table.map(async (exhibit) => {
+    const exhibits = await getExhibits(exhibit.id);
+    return exhibits.map((exhibit) => ({
+      params: { id: exhibit.id },
+    }));
+  });
+}
 
+type tParams = Promise<{ id: string }>;
+
+export default async function ExhibitDetail({ params }: { params: tParams }) {
+  const { id } = await params;
+  const exhibit = await getExhibitData(id);
   if (!exhibit) {
-    return <Spinner />;
+    notFound();
   }
 
   const urlInfo = exhibit.url ? parseURL(exhibit.url) : null;
+  const preUrl = `/${new Date(exhibit.event.date).getFullYear()}/exhibit`;
 
   return (
     <div className="bg-white text-black min-h-screen p-8 font-sans">
       <div className="max-w-4xl mx-auto">
         <nav className="mb-8">
-          <button
-            type="button"
-            onClick={() => router.push(parentPath)}
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            <span>Back to all exhibits</span>
-          </button>
+          <Link href={preUrl}>
+            <button
+              type="button"
+              className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              <span>Back to all exhibits</span>
+            </button>
+          </Link>
         </nav>
         <article>
           <header className="mb-8">
