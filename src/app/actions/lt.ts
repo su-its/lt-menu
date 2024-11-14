@@ -1,15 +1,13 @@
 "use server";
 
-import {
-  type Event,
-  type Exhibit,
-  type LightningTalk,
-  type Member,
-  type MemberExhibit,
-  PrismaClient,
+import type {
+  Event,
+  Exhibit,
+  LightningTalk,
+  Member,
+  MemberExhibit,
 } from "@shizuoka-its/core";
-
-const client = new PrismaClient();
+import client from "@/libs/prisma";
 
 const exhibitInclude = {
   exhibit: {

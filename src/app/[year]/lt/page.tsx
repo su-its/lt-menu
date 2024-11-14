@@ -1,60 +1,41 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { Clock, Calendar } from "lucide-react";
 import { getLTs, getEvent, type LightningTalkWithAll } from "@/app/actions/lt";
 import type { Event } from "@shizuoka-its/core";
 import { lt_data_table } from "@/constants";
-import { use, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatDateToYYYYMMDD, formatDateToDuration } from "@/libs/dateUtil";
 import { Spinner } from "@/Components/Spinner";
+import { notFound } from "next/navigation";
 
-export default function Home({
-  params,
-}: {
-  params: Promise<{ year: string }>;
-}) {
-  const router = useRouter();
-  const { year } = use(params);
-  const [talks, setTalks] = useState<LightningTalkWithAll[]>([]);
-  const [event, setEvent] = useState<Event | null>(null);
+export const revalidate = 3600;
 
-  useEffect(() => {
-    const fetchTalks = async () => {
-      const eventID = lt_data_table.find((lt) => lt.year === year)
-        ?.id as string;
-      const event = await getEvent(eventID);
-      const talks = await getLTs(event);
-      const sortedTalks = talks.sort((a, b) => {
-        const timeA = new Date(a.startTime).getTime();
-        const timeB = new Date(b.startTime).getTime();
-        return timeA - timeB;
-      });
-      if (talks && event) {
-        setTalks(sortedTalks);
-        setEvent(event);
-      } else {
-        router.push("/404");
-      }
-    };
-    fetchTalks();
-  }, [year, router]);
+export async function generateStaticParams() {
+  return lt_data_table.map((lt) => ({
+    year: lt.year,
+  }));
+}
 
+type tParams = Promise<{ year: string }>;
+
+export default async function ({ params }: { params: tParams }) {
+  const { year } = await params;
+
+  const eventID = lt_data_table.find((lt) => lt.year === year)?.id as string;
+  const event = await getEvent(eventID);
   if (!event) {
-    return <Spinner />;
+    notFound();
   }
+
+  const talks = await getLTs(event).then((talks) =>
+    talks.sort((a, b) => {
+      return a.startTime > b.startTime ? 1 : -1;
+    }),
+  );
 
   return (
     <div className="bg-white text-black min-h-screen p-8 font-sans overflow-hidden">
       <div className="max-w-6xl mx-auto">
-        <motion.header
-          className="text-center mb-12 mt-16"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <header className="text-center mb-12 mt-16">
           <h1 className="text-3xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
             {event?.name}
           </h1>
@@ -70,7 +51,7 @@ export default function Home({
               <span className="font-semibold">Time: 13:00 - 14:45</span>
             </div>
           </div>
-        </motion.header>
+        </header>
         <main>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {talks.map((talk, index) => {
@@ -79,12 +60,9 @@ export default function Home({
                   href={`/${year}/lt/${talk.exhibitId}`}
                   key={talk.exhibitId}
                 >
-                  <motion.div
+                  <div
                     key={talk.exhibitId}
                     className="h-full bg-white rounded-lg p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 border-2 border-gray-300 cursor-pointer"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
                   >
                     <div className="text-sm text-blue-700 mb-2 font-semibold">
                       {formatDateToDuration(talk.startTime, talk.duration)}
@@ -98,22 +76,17 @@ export default function Home({
                         .join(", ")}
                     </div>
                     <p className="text-gray-600">{talk.exhibit.description}</p>
-                  </motion.div>
+                  </div>
                 </Link>
               );
             })}
           </div>
         </main>
-        <motion.footer
-          className="text-center mt-12"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-        >
+        <footer className="text-center mt-12">
           <p className="text-xl text-gray-800 mb-4 font-bold">
             ぜひ、LT大会に来てください！
           </p>
-        </motion.footer>
+        </footer>
       </div>
     </div>
   );
